@@ -1,0 +1,150 @@
+// plugins/impact-splash-loader.js
+ig.baked = true;
+ig.module('plugins.impact-splash-loader').requires('impact.loader').defines(function () {
+    ig.ImpactSplashLoader = ig.Loader.extend({
+        endTime:0,
+        fadeToWhiteTime:200,
+        fadeToGameTime:800,
+        logoWidth:340,
+        logoHeight:120,
+        end:function () {
+            this.parent();
+            this.endTime = Date.now();
+            ig.system.setDelegate(this);
+        },
+        run:function () {
+            var t = Date.now() - this.endTime;
+            var alpha = 1;
+            if (t < this.fadeToWhiteTime) {
+                this.draw();
+                alpha = t.map(0, this.fadeToWhiteTime, 0, 1);
+            }
+            else if (t < this.fadeToGameTime) {
+                ig.game.run();
+                alpha = t.map(this.fadeToWhiteTime, this.fadeToGameTime, 1, 0);
+            }
+            else {
+                ig.system.setDelegate(ig.game);
+                return;
+            }
+            ig.system.context.fillStyle = 'rgba(255,255,255,' + alpha + ')';
+            //ig.system.context.fillRect(0, 0, ig.system.realWidth, ig.system.realHeight);
+            //alert('ok--05');
+        },
+        draw:function () {
+            this._drawStatus += (this.status - this._drawStatus) / 5;
+            var ctx = ig.system.context;
+            var w = ig.system.realWidth;
+            var h = ig.system.realHeight;
+            var scale = w / this.logoWidth / 3;
+            var center = (w - this.logoWidth * scale) / 2;
+            ctx.drawImage(ig.ImpactSplashLoader.LOADER_background, 0, 0);
+            ctx.fillStyle = 'rgba(0,0,0,0.1)';
+            ctx.fillRect(0, 0, w, h);
+            ctx.fillStyle = 'rgb(128,128,128)';
+            ctx.textAlign = 'right';
+            ctx.font = '15px Arial';
+            ctx.fillText('openSystem china', w - 10, h - 10);
+            ctx.textAlign = 'left';
+            ctx.save();
+            //指定新的坐标原点
+            //ctx.translate(center, h / 2.5);
+            //ctx.scale(scale, scale);
+
+            //ctx.lineWidth = '3';
+            //ctx.strokeStyle = 'rgb(255,255,255)';
+
+            //进度条外框
+            //ctx.strokeRect(25, this.logoHeight + 40, 300, 20);
+            //绘制进度条
+            //
+
+            //ctx.fillRect(30, this.logoHeight + 45, 290 * this._drawStatus, 10);
+            //绘制图片
+            //this.drawPaths('rgb(255,255,255)', ig.ImpactSplashLoader.PATHS_IMPACT);
+
+            /*
+             var comet = ig.ImpactSplashLoader.PATHS_COMET;
+             comet[5][0] = 3 - Math.random() * this._drawStatus * 7;
+             comet[5][1] = 3 - Math.random() * this._drawStatus * 10;
+             comet[7][0] = 29.5 - Math.random() * this._drawStatus * 10;
+             comet[7][1] = 40.4 - Math.random() * this._drawStatus * 10;
+             comet[9][0] = 16.1 - Math.random() * this._drawStatus * 10;
+             comet[9][1] = 36.1 - Math.random() * this._drawStatus * 5;
+             ctx.translate(-Math.random() * this._drawStatus * 7, -Math.random() * this._drawStatus * 5);
+             //绘制图标
+             //this.drawPaths('rgb(243,120,31)', comet);
+
+             this.progressBarRect(ctx,225, this.logoHeight + 335, 535 * this._drawStatus, 50,25,535);
+             */
+
+
+            ctx.drawImage(ig.ImpactSplashLoader.LOADER_progressBar, 0, 0, 513 * this._drawStatus, 50, 225, this.logoHeight + 335, 513 * this._drawStatus, 50)
+            ctx.restore();
+
+
+        }/*,
+
+         progressBarRect:function(ctx, x, y, width, height, radius, max)
+         {
+         // deplacement for chord drawing
+         var offset = 0;
+         ctx.beginPath();
+         ctx.fillStyle = 'rgb(30,144,255)';
+
+         if (width < radius) {
+         offset = radius - Math.sqrt(Math.pow(radius, 2) - Math.pow((radius - width), 2));
+         // Left angle
+         var left_angle = Math.acos((radius - width) / radius);
+         ctx.moveTo(x + width, y + offset);
+         ctx.lineTo(x + width, y + height - offset);
+         ctx.arc(x + radius, y + radius, radius, Math.PI - left_angle, Math.PI + left_angle, false);
+         }
+         else if (width + radius > max) {
+         offset = radius - Math.sqrt(Math.pow(radius, 2) - Math.pow((radius - (max - width)), 2));
+         // Right angle
+         var right_angle = Math.acos((radius - (max - width)) / radius);
+         ctx.moveTo(x + radius, y);
+         ctx.lineTo(x + width, y);
+         ctx.arc(x + max - radius, y + radius, radius, -Math.PI / 2, -right_angle, false);
+         ctx.lineTo(x + width, y + height - offset);
+         ctx.arc(x + max - radius, y + radius, radius, right_angle, Math.PI / 2, false);
+         ctx.lineTo(x + radius, y + height);
+         ctx.arc(x + radius, y + radius, radius, Math.PI / 2, 3 * Math.PI / 2, false);
+         }
+         else {
+         ctx.moveTo(x + radius, y);
+         ctx.lineTo(x + width, y);
+         ctx.lineTo(x + width, y + height);
+         ctx.lineTo(x + radius, y + height);
+         ctx.arc(x + radius, y + radius, radius, Math.PI / 2, 3 * Math.PI / 2, false);
+         }
+         ctx.closePath();
+         ctx.fill();
+
+         // shadow on the right
+         if (width < max - 1) {
+         //保存canvas的信息
+         ctx.save();
+         ctx.shadowOffsetX = 1;
+         ctx.shadowBlur = 1;
+         ctx.shadowColor = '#666';
+         if (width + radius > max)
+         offset = offset + 1;
+         //ctx.fillRect(x + width, y + offset, 1, total_height - offset * 2);
+         //canvas的信息弹出堆栈
+         ctx.restore();
+         }
+         }*/
+    });
+    var back = new Image()
+    back.src = 'media/sprites/back.png';
+
+    var progressBar = new Image();
+    progressBar.src = 'media/sprites/progressBar.png';
+    //ig.ImpactSplashLoader.OPS = {bp:'beginPath', cp:'closePath', f:'fill', m:'moveTo', l:'lineTo', bc:'bezierCurveTo'};
+    //ig.ImpactSplashLoader.PATHS_COMET = ['bp', [], 'm', [85.1, 58.3], 'l', [0.0, 0.0], 'l', [29.5, 40.4], 'l', [16.1, 36.1], 'l', [54.6, 91.6], 'bc', [65.2, 106.1, 83.4, 106.7, 93.8, 95.7], 'bc', [103.9, 84.9, 98.6, 67.6, 85.1, 58.3], 'cp', [], 'm', [76.0, 94.3], 'bc', [68.5, 94.3, 62.5, 88.2, 62.5, 80.8], 'bc', [62.5, 73.3, 68.5, 67.2, 76.0, 67.2], 'bc', [83.5, 67.2, 89.6, 73.3, 89.6, 80.8], 'bc', [89.6, 88.2, 83.5, 94.3, 76.0, 94.3], 'cp', [], 'f', []];
+    //ig.ImpactSplashLoader.PATHS_IMPACT = ['bp', [], 'm', [128.8, 98.7], 'l', [114.3, 98.7], 'l', [114.3, 26.3], 'l', [128.8, 26.3], 'l', [128.8, 98.7], 'cp', [], 'f', [], 'bp', [], 'm', [159.2, 70.1], 'l', [163.6, 26.3], 'l', [184.6, 26.3], 'l', [184.6, 98.7], 'l', [170.3, 98.7], 'l', [170.3, 51.2], 'l', [164.8, 98.7], 'l', [151.2, 98.7], 'l', [145.7, 50.7], 'l', [145.7, 98.7], 'l', [134.1, 98.7], 'l', [134.1, 26.3], 'l', [155.0, 26.3], 'l', [159.2, 70.1], 'cp', [], 'f', [], 'bp', [], 'm', [204.3, 98.7], 'l', [189.8, 98.7], 'l', [189.8, 26.3], 'l', [211.0, 26.3], 'bc', [220.0, 26.3, 224.5, 30.7, 224.5, 39.7], 'l', [224.5, 60.1], 'bc', [224.5, 69.1, 220.0, 73.6, 211.0, 73.6], 'l', [204.3, 73.6], 'l', [204.3, 98.7], 'cp', [], 'm', [207.4, 38.7], 'l', [204.3, 38.7], 'l', [204.3, 61.2], 'l', [207.4, 61.2], 'bc', [209.1, 61.2, 210.0, 60.3, 210.0, 58.6], 'l', [210.0, 41.3], 'bc', [210.0, 39.5, 209.1, 38.7, 207.4, 38.7], 'cp', [], 'f', [], 'bp', [], 'm', [262.7, 98.7], 'l', [248.3, 98.7], 'l', [247.1, 88.2], 'l', [238.0, 88.2], 'l', [237.0, 98.7], 'l', [223.8, 98.7], 'l', [233.4, 26.3], 'l', [253.1, 26.3], 'l', [262.7, 98.7], 'cp', [], 'm', [239.4, 75.5], 'l', [245.9, 75.5], 'l', [242.6, 43.9], 'l', [239.4, 75.5], 'cp', [], 'f', [], 'bp', [], 'm', [300.9, 66.7], 'l', [300.9, 85.9], 'bc', [300.9, 94.9, 296.4, 99.4, 287.4, 99.4], 'l', [278.5, 99.4], 'bc', [269.5, 99.4, 265.1, 94.9, 265.1, 85.9], 'l', [265.1, 39.1], 'bc', [265.1, 30.1, 269.5, 25.6, 278.5, 25.6], 'l', [287.2, 25.6], 'bc', [296.2, 25.6, 300.7, 30.1, 300.7, 39.1], 'l', [300.7, 56.1], 'l', [286.4, 56.1], 'l', [286.4, 40.7], 'bc', [286.4, 38.9, 285.6, 38.1, 283.8, 38.1], 'l', [282.1, 38.1], 'bc', [280.4, 38.1, 279.5, 38.9, 279.5, 40.7], 'l', [279.5, 84.3], 'bc', [279.5, 86.1, 280.4, 86.9, 282.1, 86.9], 'l', [284.0, 86.9], 'bc', [285.8, 86.9, 286.6, 86.1, 286.6, 84.3], 'l', [286.6, 66.7], 'l', [300.9, 66.7], 'cp', [], 'f', [], 'bp', [], 'm', [312.5, 98.7], 'l', [312.5, 39.2], 'l', [303.7, 39.2], 'l', [303.7, 26.3], 'l', [335.8, 26.3], 'l', [335.8, 39.2], 'l', [327.0, 39.2], 'l', [327.0, 98.7], 'l', [312.5, 98.7], 'cp', [], 'f', []];
+    ig.ImpactSplashLoader.LOADER_background = back;
+    ig.ImpactSplashLoader.LOADER_progressBar = progressBar;
+});
